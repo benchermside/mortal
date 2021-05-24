@@ -1,0 +1,447 @@
+<html>
+	<head>
+		<style>
+			.risky{
+				color: red;
+			}
+			.owlpic{
+				border: solid 3px;
+			}
+			.modifyed{
+				font-style: oblique 181deg;
+			}
+			.picture{
+				max-height: 10em;
+				max-width: 10em;
+				
+			}
+			.hidden {
+				display: none;
+			}
+			.row{
+				display: flex;
+			}
+			.myBtn{
+				visibility: visible;
+			}
+			.moveButten{
+				display: none;
+			}
+			.grid {
+				display: inline-grid;
+				grid-template-columns: 1fr 1fr 1fr 1fr;
+			
+			}
+			.element {
+				color: blue;
+				border: solid black 1px;
+				padding: 2px;
+			}
+		</style>
+	</head>
+	<body>
+		<!--
+		<h1>Hello, world</h1>
+		<p>This is a </P>
+		<button class="modifyed"> clIck me</button>
+		<button class="risky"> Dont clIck me</button>
+		-->
+		<div class="row">
+			<div class="hidden" id="move1">
+				<img class="picture" src="normalAttack.jpg"/>
+				<div>
+					<button class="myBtn" onclick="slecttarget()">normalAttack</button>
+					<div class="hidden" id="normalattackvariants">
+						<button class="myBtn" onclick="makeMove('normalAttack1')">normalAttack1</button>
+						<div>
+							<button class="myBtn" onclick="makeMove('normalAttack2')">normalAttack2</button>
+							<div>
+								<button class="myBtn" onclick="makeMove('normalAttack3')">normalAttack3</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="hidden" id = "move2">
+				<img class="picture" src="specialAttack.jpg"/>
+				<div>
+					<button class="myBtn" onclick="makeMove('specialAttack')">specialAttack</button>
+				</div>
+			</div>
+			<div class="hidden" id = "move3">
+				<img class="picture" src="block.jpg"/>
+				<div>
+					<button class="myBtn" onclick="makeMove('block')">block</button>
+				</div>
+			</div>
+			<div class="hidden" id="move4">
+				<img class="picture" src="specialblock.jpg"/>
+				<div>
+					<button class="myBtn" onclick="makeMove('specialblock')">specialblock</button>
+				</div>
+			</div>
+			<div class="hidden" id = "move5">
+				<img class="picture" src="reflect.jpg"/>
+				<div>
+					<button class="myBtn" onclick="makeMove('reflect')">reflect</button>
+				</div>
+			</div>
+			<div class="hidden" id = "move6">
+				<img class="picture" src="healing.jpg"/>
+				<div>
+					<button class="myBtn" onclick="makeMove('heal')">healing</button>
+
+				</div>
+			</div>
+			<button onclick="start()" >start</button>
+			<div class="grid">
+				<div class="element">names </div>
+				<div class="element">player1 </div>
+				<div class="element">player2 </div>
+				<div class="element">player3 </div>
+				<div class="element">moves </div>
+				<div class="element" id="move1display"></div>
+				<div class="element" id="move2display"></div>
+				<div class="element" id="move3display"></div>
+				<div class="element">healths </div>
+				<div class="element" id="health1display">14 </div>
+				<div class="element" id="health2display">14 </div>
+				<div class="element" id="health3display">14 </div>
+			</div>
+		</div>
+		<script>
+		let playerTurn = 1;
+		const player1Move = null;
+		const player2Move = null;
+		const player3Move = null;
+		const playersMoves = [player1Move, player2Move, player3Move];
+		const player1Health = 14;
+		const player2Health = 14;
+		const player3Health = 14;
+		const playersHealths = [player1Health, player2Health, player3Health];	
+		const possibleMoves = ['normalAttack', 'specialAttack', 'block', 'specialblock', 'reflect', 'heal'] 
+		const hasspecialblock = [true, true, true]
+		
+		
+		function start() {
+			//alert("hi");
+
+			const moveElementIds = ["move1", "move2", "move3", "move4", "move5", "move6"];
+			moveElementIds.forEach(function(moveElementId) {
+				const moveElement = document.getElementById(moveElementId);
+				moveElement.classList.remove("hidden");
+			});
+			
+			
+			//console.log(`The player1 health is ${player1Health}`);
+			
+			updateDisplay();
+		}
+		
+		
+		function specialAttack (actingPlayer){
+			console.log("special Attacked");
+			let whosAttacked = 0;
+			while (whosAttacked < 3){
+				if (!( whosAttacked === actingPlayer)){
+					if (playersMoves[whosAttacked] === "specialblock"){
+						console.log("blokedbyspecialblock");
+					}
+					else{
+						if (playersMoves[whosAttacked] === "block"){
+							playersHealths[whosAttacked] = playersHealths[whosAttacked] - 1;
+						}
+						else{
+							if (playersMoves[whosAttacked] === "reflect"){
+								console.log("noted reflection");
+								let thirdplayer = 0;
+								while(thirdplayer < 3) {
+									if (!((thirdplayer === whosAttacked) || (thirdplayer === actingPlayer ))){
+										console.log("about to log signifignet thing");
+										console.log(thirdplayer.toString(10));
+										console.log(possibleMoves[0] + thirdplayer.toString(10));
+										if(((playersMoves[thirdplayer] === "specialAttack") || (playersMoves[thirdplayer] === 'tobestuned' ))||(playersMoves[thirdplayer] === (possibleMoves[0] + ((whosAttacked + 1).toString(10))))){
+											//must change flase with a check of is playersMoves[thirdplayer] == normal attack twards player whoes attacked
+											playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
+										}
+										else{
+											playersHealths[whosAttacked] = playersHealths[whosAttacked] - 6;
+										}
+									}
+									thirdplayer = thirdplayer + 1;
+								}
+							}
+							else{
+								playersHealths[whosAttacked] = playersHealths[whosAttacked] - 6;
+							}
+						}
+					}
+				}
+				whosAttacked = whosAttacked + 1;
+			}
+			playersMoves[actingPlayer] = 'tobestuned';
+		}
+		
+		function stuned (actingPlayer){
+			console.log("entered sutn finction");
+			playersMoves[actingPlayer] = null;
+		}
+		
+		function block(actingPlayer){
+			console.log("blocked");
+		}
+		
+		function specialBlocked(actingPlayer){
+			console.log("specialBlocked");
+			hasspecialblock[actingPlayer] = false
+		}
+			
+		function Heal(actingPlayer){
+			console.log("entered heal function");
+			let healtarget = 0;
+			while (healtarget < 3) {
+				if (healtarget === actingPlayer){
+					playersHealths[healtarget] = playersHealths[healtarget] + 2;
+				}
+				else{
+					if (!(((playersMoves[healtarget] === "block" )||( playersMoves[healtarget] === 'specialblock'))||(playersHealths[healtarget] < 1))){
+						playersHealths[healtarget] = playersHealths[healtarget] + 1;				
+					}
+				}
+				healtarget = healtarget + 1;
+			}
+		
+		}
+		
+		function Reflect(actingPlayer){
+			console.log("reflected");
+			
+		}
+		function normalAttack1(actingPlayer){
+			console.log("normal attacked player 1");
+			const opposingplayer = 0;
+			if (playersMoves[opposingplayer] === "block"){
+				playersHealths[opposingplayer] =  playersHealths[opposingplayer] - 1;
+			}
+			else{
+				if (playersMoves[opposingplayer] === "specialblock"){
+				}
+				else{
+					if(playersMoves[opposingplayer] === "reflect"){
+						let thirdplayer = 0;
+						while (thirdplayer < 3){
+							if (!((thirdplayer === actingPlayer)|| (thirdplayer === opposingplayer) )){
+								if (((playersMoves[thirdplayer] === "specialAttack") ||(playersMoves[thirdplayer] === "normalAttack1"))||(playersMoves[thirdplayer] === "tobestuned")){
+									playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
+								}
+								else{
+									playersHealths[opposingplayer] = playersHealths[opposingplayer] - 2;
+								}
+							}
+							thirdplayer = thirdplayer + 1;
+						}
+					}
+					else{
+						playersHealths[opposingplayer] = playersHealths[opposingplayer] - 2;
+					}
+				}
+			}
+		}
+		
+		function normalAttack2(actingPlayer){
+			console.log("normal attacked player 2");
+			const opposingplayer = 1;
+			if (playersMoves[opposingplayer] === "block"){
+				playersHealths[opposingplayer] =  playersHealths[opposingplayer] - 1;
+			}
+			else{
+				if (playersMoves[opposingplayer] === "specialblock"){
+				}
+				else{
+					if(playersMoves[opposingplayer] === "reflect"){
+						let thirdplayer = 0;
+						while (thirdplayer < 3){
+							if (!((thirdplayer === actingPlayer)|| (thirdplayer === opposingplayer) )){
+								if (((playersMoves[thirdplayer] === "specialAttack") ||(playersMoves[thirdplayer] === "normalAttack2"))||(playersMoves[thirdplayer] === "tobestuned")){
+									playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
+								}
+								else{
+									playersHealths[opposingplayer] = playersHealths[opposingplayer] - 2;
+								}
+							}
+							thirdplayer = thirdplayer + 1;
+						}						
+					}
+					else{
+						playersHealths[opposingplayer] = playersHealths[opposingplayer] - 2;
+					}
+				}
+			}
+		}
+		
+		function normalAttack3(actingPlayer){
+			console.log("normal attacked player 1");
+			const opposingplayer = 2;
+			if (playersMoves[opposingplayer] === "block"){
+				playersHealths[opposingplayer] =  playersHealths[opposingplayer] - 1;
+			}
+			else{
+				if (playersMoves[opposingplayer] === "specialblock"){
+				}
+				else{
+					if(playersMoves[opposingplayer] === "reflect"){
+						let thirdplayer = 0;
+						while (thirdplayer < 3){
+							if (!((thirdplayer === actingPlayer)|| (thirdplayer === opposingplayer) )){
+								if (((playersMoves[thirdplayer] === "specialAttack") ||(playersMoves[thirdplayer] === "normalAttack3"))||(playersMoves[thirdplayer] === "tobestuned")){
+									playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
+								}
+								else{
+									playersHealths[opposingplayer] = playersHealths[opposingplayer] - 2;
+								}
+							}
+							thirdplayer = thirdplayer + 1;
+						}
+					}
+					else{
+						playersHealths[opposingplayer] = playersHealths[opposingplayer] - 2;
+					}
+				}
+			}
+		}
+		
+		function slecttarget(){
+			console.log("playerslection acctavated");
+			const button = document.getElementById("normalattackvariants");
+			button.classList.remove("hidden");
+		}
+		
+		
+		
+		function makeMove (move) {
+			
+			if (playerTurn === 1) {
+				if (playersHealths[0] > 0) {
+					if ((hasspecialblock[0] === true )||(!(move === 'specialblock')) ){
+						playersMoves[0] = move;
+					}
+					else{
+						playersMoves[0] = 'block';
+					}
+				}
+			}
+			
+			if (playerTurn === 2){
+				if (playersHealths[1] > 0) {
+					if ((hasspecialblock[1] === true )||(!(move === 'specialblock')) ){
+						playersMoves[1] = move;
+					}
+					else{
+						playersMoves[1] = 'block';
+					}
+				}
+			}
+			if (playerTurn === 3){
+				if (playersHealths[2] > 0) {
+					if ((hasspecialblock[2] === true )||(!(move === 'specialblock')) ){
+						playersMoves[2] = move;
+					}
+					else{
+						playersMoves[2] = 'block';
+					}
+					
+				}
+			}
+			if (playerTurn === 3) {
+				playerTurn = 0;
+				count = 0;
+				while (count < 3){
+					if (playersMoves[count] === 'stuned'){
+						stuned(count);
+					}
+					if (playersMoves[count] === 'specialAttack'){
+						specialAttack (count);
+							
+					}
+					if (playersMoves[count] === 'heal'){
+						Heal (count);
+							
+					}
+					if (playersMoves[count] === 'reflect'){
+						Reflect (count);
+							
+					}
+					if (playersMoves[count] === 'block'){
+						block (count);
+							
+					}
+					if (playersMoves[count] === 'specialblock'){
+						specialBlocked (count);
+							
+					}
+					if (playersMoves[count] === 'normalAttack1'){
+						normalAttack1(count);
+					}
+					if (playersMoves[count] === 'normalAttack2'){
+						normalAttack2(count);
+					}
+					if (playersMoves[count] === 'normalAttack3'){
+						normalAttack3(count);
+					}
+					
+					count = count + 1;
+					
+				}
+			
+				let stuncounter = 0;
+				while (stuncounter < 3){
+					if (playersMoves[stuncounter] === 'tobestuned'){
+						console.log("shouldstun");
+						playersMoves[stuncounter] = 'stuned';
+						console.log(playersMoves[stuncounter])
+					}
+					stuncounter = stuncounter + 1;
+				}
+			}
+			document.getElementById("normalattackvariants").classList.add("hidden");
+			playerTurn = playerTurn + 1;
+			updateDisplay();
+			if (playersMoves[playerTurn - 1] === 'stuned'){
+				makeMove('stuned')
+			}
+			if (playersHealths[playerTurn - 1 ] < 1){
+				playersMoves[playerTurn - 1] = null
+				makeMove ("")
+			}
+		}
+		
+		
+		
+		function updateDisplay() {
+			let iteration = 1;
+			while (iteration < 4 ){
+				const moveElem = document.getElementById(`move${iteration}display`);
+				if (playersMoves[iteration - 1] === null) {
+					moveElem.innerHTML = "";
+				} else {
+					moveElem.innerHTML = playersMoves[iteration - 1];
+				}
+				const healthElem = document.getElementById(`health${iteration}display`);
+				if (playersHealths[iteration - 1] === null) {
+					healthElem.innerHTML = "";
+				} else {
+					healthElem.innerHTML = playersHealths[iteration - 1];
+				}				
+				iteration = iteration + 1;
+			}
+		}
+			
+			
+			
+	
+		
+		
+		</script>
+	</body>
+    
+</html>

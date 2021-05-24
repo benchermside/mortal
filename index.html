@@ -1,0 +1,321 @@
+<html>
+    <head>
+        <style type = "text/css">
+            .picture{
+                max-height: 10em;
+                max-width: 10em;
+
+            }
+            .hidden {
+                display: none;
+            }
+            .row{
+                display: flex;
+            }
+            .myBtn{
+                visibility: visible;
+            }
+            .moveButten{
+                display: none;
+            }
+            .grid {
+                display: inline-grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+
+            }
+            .element {
+                color: blue;
+                border: solid black 1px;
+                padding: 2px;
+            }
+            .text {
+                visibility: visible;
+
+            }
+            .lobbyGrid{
+                display: inline-grid;
+                grid-template-columns: auto auto;
+            }
+            .lobbyGrid > * {
+                padding: 3px;
+                border: 1px solid black;
+            }
+
+
+
+        </style>
+    </head>
+
+
+
+
+    <body>
+        <div id="logInScreen">
+            <div id="enterUserName">
+                <label class="text">
+                    enter username
+
+                </label>
+                <input type="text" id="usernameInputBox">
+
+            </div>
+            <div id="enterGameID">
+                <label class="text">
+                    enter game ID
+
+                </label>
+                <input type="text" id="IdInputBox">
+
+            </div>
+            <div>
+                <button class = "myBtn" id = "joinButton">join game</button>
+
+            </div>
+        </div>
+        <div id = "lobby" class="hidden">
+            <div class="lobbyGrid">
+                <div>
+                    player 1
+                </div>
+                <div id = "playerSpot1">
+                    waiting...
+                </div>
+                <div>
+                    player 2
+                </div>
+                <div id = "playerSpot2">
+                    waiting...
+                </div>
+                <div >
+                    player 3
+                </div>
+                <div id = "playerSpot3">
+                    waiting...
+                </div>
+            </div>
+        </div>
+        <div ID = "gamebord" class="hidden">
+            <div class="row">
+                <div class="hidden" id="move1">
+                    <img class="picture" src="game images/normalAttack.jpg"/>
+                    <div>
+                        <button class="myBtn" onclick="slectTarget()">normalAttack</button>
+                        <div class="hidden" id="normalattackvariants">
+                            <button class="myBtn" onclick="broadcastMove('normalAttack1')">normalAttack1</button>
+                            <div>
+                                <button class="myBtn" onclick="broadcastMove('normalAttack2')">normalAttack2</button>
+                                <div>
+                                    <button class="myBtn" onclick="broadcastMove('normalAttack3')">normalAttack3</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden" id = "move2">
+                    <img class="picture" src="game images/specialAttack.jpg"/>
+                    <div>
+                        <button class="myBtn" onclick="broadcastMove('specialAttack')">specialAttack</button>
+                    </div>
+                </div>
+                <div class="hidden" id = "move3">
+                    <img class="picture" src="game images/block.jpg"/>
+                    <div>
+                        <button class="myBtn" onclick="broadcastMove('block')">block</button>
+                    </div>
+                </div>
+                <div class="hidden" id="move4">
+                    <img class="picture" src="game images/specialblock.jpg"/>
+                    <div>
+                        <button class="myBtn" onclick="broadcastMove('specialblock')">specialblock</button>
+                    </div>
+                </div>
+                <div class="hidden" id = "move5">
+                    <img class="picture" src="game images/reflect.jpg"/>
+                    <div>
+                        <button class="myBtn" onclick="broadcastMove('reflect')">reflect</button>
+                    </div>
+                </div>
+                <div class="hidden" id = "move6">
+                    <img class="picture" src="game images/healing.jpg"/>
+                    <div>
+                        <button class="myBtn" onclick="broadcastMove('heal')">healing</button>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="element">names </div>
+                    <div class="element">player1 </div>
+                    <div class="element">player2 </div>
+                    <div class="element">player3 </div>
+                    <div class="element">moves </div>
+                    <div class="element" id="move1display"></div>
+                    <div class="element" id="move2display"></div>
+                    <div class="element" id="move3display"></div>
+                    <div class="element">healths </div>
+                    <div class="element" id="health1display">14 </div>
+                    <div class="element" id="health2display">14 </div>
+                    <div class="element" id="health3display">14 </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            "use strict";
+            let numPlayers = 0;
+            const playerList = [];
+            let mode = "logIn";
+            const allStoredMoves = [];
+            let globalWebSocket = undefined;
+            let myName = undefined;
+            const webSocketEndpoint = "wss://vo41xadzr9.execute-api.us-east-1.amazonaws.com/production";
+
+            // ==== Functions that dispatch incoming messages ====
+
+            function onMessage(message) {
+                console.log(message);
+                if (mode === "lobby"){
+                    lobbyMessage(message);
+                }
+                else{
+                    if (mode === "playing"){
+                        gamePlayMessage(message);
+                    }
+                }
+
+            }
+
+            function lobbyMessage(messageText){
+                //checks if message is about a player joining game
+                const message = JSON.parse(messageText);
+                console.log(message)
+                if(message.trigger === "playerAdded") {
+                    if (numPlayers > 0){
+                        addPlayer(message.newPlayer)
+                    }
+                    else {
+                        if (numPlayers === 0){
+                            let i = message.players.length
+                            while (i>0){
+                                addPlayer(message.players[i - 1])
+                                i = i - 1
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            function gamePlayMessage(messageText){
+                const message = JSON.parse(messageText);
+                if (message.trigger === "messageSent") {
+                    setMove(message.data.move,message.sender);
+                }
+
+            }
+
+
+            function receivedMove(move){
+
+            }
+
+            // ==== Functions that do XXXX =====
+
+            function addPlayer(playername){
+                numPlayers = numPlayers + 1;
+                const playerSpot = document.getElementById(`playerSpot${numPlayers}`);
+                playerSpot.innerText = playername;
+                playerList.push(playername);
+                if (numPlayers === 3){
+                    startGame();
+                }
+            }
+            /* Returns the content of the input element with the given id. */
+
+
+
+            function startGame(){
+                console.log("startgame");
+                const loby = document.getElementById("lobby");
+                loby.classList.add("hidden");
+                const gameBoard = document.getElementById("gamebord");
+                gameBoard.classList.remove("hidden");
+                const moveElementIds = ["move1", "move2", "move3", "move4", "move5", "move6"];
+                moveElementIds.forEach(function(moveElementId) {
+                    const moveElement = document.getElementById(moveElementId);
+                    moveElement.classList.remove("hidden");
+                })
+                mode = "playing";
+                const playersNextMoves = {};
+                playersNextMoves[playerList[0]] = null;
+                playersNextMoves[playerList[1]] = null;
+                playersNextMoves[playerList[2]] = null;
+                const playersPreviousMoves = {};
+                playersPreviousMoves[playerList[0]] = null;
+                playersPreviousMoves[playerList[1]] = null;
+                playersPreviousMoves[playerList[2]] = null;
+                allStoredMoves.push(playersPreviousMoves);
+                allStoredMoves.push(playersNextMoves);
+                const player1Health = 14;
+                const player2Health = 14;
+                const player3Health = 14;
+                const playersHealths = [player1Health, player2Health, player3Health];
+                const possibleMoves = ['normalAttack', 'specialAttack', 'block', 'specialblock', 'reflect', 'heal'];
+
+            }
+
+            function broadcastMove(move){
+                ///needs to be updated to deal with deth
+                const message = {"move":move};
+                const fullMessage = {"action":"sendMessage","data":message};
+                const messageText = JSON.stringify(fullMessage);
+                globalWebSocket.send(messageText);
+                setMove(move, myName);
+            }
+
+            function setMove(move,player){
+                console.log("called set move", move, player);
+            }
+
+            function slectTarget(){
+                console.log("playerslection acctavated");
+                const button = document.getElementById("normalattackvariants");
+                button.classList.remove("hidden");
+            }
+
+            function getInput(id) {
+                const elem = document.getElementById(id);
+                return elem.value;
+            }
+
+            function connect() {
+                const webSocket = new WebSocket(webSocketEndpoint);
+                webSocket.onmessage = function(event) {
+                    console.log("Got a message");
+                    onMessage(event.data);
+                }
+                function joinGame() {
+                    const logInScreen = document.getElementById("logInScreen");
+                    logInScreen.classList.add("hidden");
+                    const gameId = getInput("IdInputBox");
+                    const playerId = getInput("usernameInputBox");
+                    const action = "joinGame";
+                    const message = {action, gameId, playerId};
+                    const messageText = JSON.stringify(message);
+                    console.log(`Sending "${messageText}"`);
+                    webSocket.send(messageText);
+                    document.getElementById("lobby").classList.remove("hidden");
+                    mode = "lobby";
+                    myName = playerId;
+                }
+                globalWebSocket = webSocket;
+                document.getElementById("joinButton").onclick = joinGame;
+            }
+
+            connect();
+
+
+
+        </script>
+    </body>
+
+
+
+</html>

@@ -143,13 +143,17 @@
                 </div>
                 <div class="grid">
                     <div class="element">names </div>
-                    <div class="element">player1 </div>
-                    <div class="element">player2 </div>
-                    <div class="element">player3 </div>
-                    <div class="element">moves </div>
-                    <div class="element" id="move1display"></div>
-                    <div class="element" id="move2display"></div>
-                    <div class="element" id="move3display"></div>
+                    <div class="element" id="player1Header"></div>
+                    <div class="element" id="player2Header"></div>
+                    <div class="element" id="player3Header"></div>
+                    <div class="element">last moves </div>
+                    <div class="element" id="perviusMove1Display"></div>
+                    <div class="element" id="perviusMove2Display"></div>
+                    <div class="element" id="perviusMove3Display"></div>
+                    <div class="element">next moves </div>
+                    <div class="element" id="nextMove1Display"></div>
+                    <div class="element" id="nextMove2Display"></div>
+                    <div class="element" id="nextMove3Display"></div>
                     <div class="element">healths </div>
                     <div class="element" id="health1display">14 </div>
                     <div class="element" id="health2display">14 </div>
@@ -191,17 +195,17 @@
                 const message = JSON.parse(messageText);
                 console.log(message)
                 if(message.trigger === "playerAdded") {
-                    if (numPlayers > 0){
-                        addPlayer(message.newPlayer)
+                    let i = message.players.length;
+                    numPlayers = message.players.length;
+                    playerList.length = 0;
+                    while (i>0){
+                        const playerSpot = document.getElementById(`playerSpot${i}`);
+                        playerSpot.innerText = message.players[i - 1];
+                        playerList.unshift(message.players[i - 1]);
+                        i = i - 1;
                     }
-                    else {
-                        if (numPlayers === 0){
-                            let i = message.players.length
-                            while (i>0){
-                                addPlayer(message.players[i - 1])
-                                i = i - 1
-                            }
-                        }
+                    if (numPlayers === 3) {
+                        startGame();
                     }
                 }
             }
@@ -222,15 +226,6 @@
 
             // ==== Functions that do XXXX =====
 
-            function addPlayer(playername){
-                numPlayers = numPlayers + 1;
-                const playerSpot = document.getElementById(`playerSpot${numPlayers}`);
-                playerSpot.innerText = playername;
-                playerList.push(playername);
-                if (numPlayers === 3){
-                    startGame();
-                }
-            }
             /* Returns the content of the input element with the given id. */
 
 
@@ -259,6 +254,12 @@
                 playersHealths[playerList[1]] = 14;
                 playersHealths[playerList[2]] = 14;
                 const possibleMoves = ['normalAttack', 'specialAttack', 'block', 'specialblock', 'reflect', 'heal'];
+                const firstPlayerNameSpot = document.getElementById("player1Header");
+                const secondPlayerNameSpot = document.getElementById("player2Header");
+                const thirdPlayerNameSpot = document.getElementById("player3Header");
+                firstPlayerNameSpot.innerText = playerList[0];
+                secondPlayerNameSpot.innerText = playerList[1];
+                thirdPlayerNameSpot.innerText = playerList[2];
             }
 
             function broadcastMove(move){

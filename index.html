@@ -159,8 +159,12 @@
         </div>
         <script>
             "use strict";
+
             let numPlayers = 0;
             const playerList = [];
+            const playersPreviousMoves = {};
+            const playersNextMoves = {};
+            const playersHealths = {};
             let mode = "logIn";
             const allStoredMoves = [];
             let globalWebSocket = undefined;
@@ -243,22 +247,18 @@
                     moveElement.classList.remove("hidden");
                 })
                 mode = "playing";
-                const playersNextMoves = {};
                 playersNextMoves[playerList[0]] = null;
                 playersNextMoves[playerList[1]] = null;
                 playersNextMoves[playerList[2]] = null;
-                const playersPreviousMoves = {};
                 playersPreviousMoves[playerList[0]] = null;
                 playersPreviousMoves[playerList[1]] = null;
                 playersPreviousMoves[playerList[2]] = null;
                 allStoredMoves.push(playersPreviousMoves);
                 allStoredMoves.push(playersNextMoves);
-                const player1Health = 14;
-                const player2Health = 14;
-                const player3Health = 14;
-                const playersHealths = [player1Health, player2Health, player3Health];
+                playersHealths[playerList[0]] = 14;
+                playersHealths[playerList[1]] = 14;
+                playersHealths[playerList[2]] = 14;
                 const possibleMoves = ['normalAttack', 'specialAttack', 'block', 'specialblock', 'reflect', 'heal'];
-
             }
 
             function broadcastMove(move){
@@ -272,6 +272,7 @@
 
             function setMove(move,player){
                 console.log("called set move", move, player);
+                playersNextMoves[player] = move;
             }
 
             function slectTarget(){

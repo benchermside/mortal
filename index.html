@@ -266,17 +266,26 @@
                 const normalAttack1 = document.getElementById("normalAttackFirst");
                 const normalAttack2 = document.getElementById("normalAttackSecond");
                 let firstWorked = false
+                const firstMove = document.getElementById("normalAttackFirst");
+                const SecondMove = document.getElementById("normalAttackSecond");
+                const ThirdMove = document.getElementById("normalAttackThird");
                 if(playerList[0] !== myName){
-                    const firstMove = document.getElementById("normalAttackFirst");
                     firstMove.innerText = playerList[0];
                 }
+                else {
+                    firstMove.classList.add("hidden");
+                }
                 if(playerList[1] !== myName) {
-                    const SecondMove = document.getElementById("normalAttackSecond");
                     SecondMove.innerText = playerList[1];
                 }
+                else {
+                    SecondMove.classList.add("hidden");
+                }
                 if(playerList[2] !== myName){
-                    const ThirdMove = document.getElementById("normalAttackThird");
                     ThirdMove.innerText = playerList[2];
+                }
+                else {
+                    ThirdMove.classList.add("hidden");
                 }
 
 

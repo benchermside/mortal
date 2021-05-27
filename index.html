@@ -620,15 +620,32 @@
                 const player1CurrentMove = document.getElementById("nextMove1Display");
                 const player2CurrentMove = document.getElementById("nextMove2Display");
                 const player3CurrentMove = document.getElementById("nextMove3Display");
-                const player1PreviusMove = document.getElementById("perviusMove1Display");
-                const player2PreviusMove = document.getElementById("perviusMove2Display");
-                const player3PreviusMove = document.getElementById("perviusMove3Display");
                 player1Health.innerText = playersHealths[playerList[0]];
                 player2Health.innerText = playersHealths[playerList[1]];
                 player3Health.innerText = playersHealths[playerList[2]];
-                player1PreviusMove.innerText = playersPreviousMoves[playerList[0]];
-                player2PreviusMove.innerText = playersPreviousMoves[playerList[1]];
-                player3PreviusMove.innerText = playersPreviousMoves[playerList[2]];
+                let i = 0;
+                let j = 0;
+                let didPlayerINormalAttack = false;
+                while (i < 3){
+                    didPlayerINormalAttack = false;
+                    j = 0
+                    while (j < 3){
+                        if (playersPreviousMoves[playerList[i]] === "normalAttack" + j){
+                            console.log("should be here");
+                            didPlayerINormalAttack = true;
+                            console.log("normalAttack" + (playerList[j]));
+                            document.getElementById("perviusMove" + (i+1) + "Display").innerText = "normal Attack " + (playerList[j]);
+                            console.log(document.getElementById("perviusMove" + (i+1) + "Display").innerText);
+                        }
+                        j = j + 1;
+                    }
+                    if(didPlayerINormalAttack === false){
+                        console.log("shouldent be here");
+                        document.getElementById("perviusMove" + (i+1) + "Display").innerText = player1PreviusMove[playerList[i]];
+                    }
+                    i = i + 1;
+                }
+
                 player1CurrentMove.innerText = "";
                 player2CurrentMove.innerText = "";
                 player3CurrentMove.innerText = "";

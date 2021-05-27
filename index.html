@@ -637,7 +637,10 @@
                         document.getElementById("move" + count2).classList.remove("hidden");
                         count2 = count2 + 1;
                     }
-                    document.getElementById("stunedMessage").classList.remove("hidden");
+                    document.getElementById("stunedMessage").classList.add("hidden");
+                }
+                if (hasSpecialBlock[myName] === false){
+                    document.getElementById("move4").classList.add("hidden");
                 }
             }
 

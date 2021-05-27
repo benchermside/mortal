@@ -1,0 +1,5 @@
+needs start new game butten
+needs rules
+why is mom at 3 not -3 bug
+should say dead not -2
+should say who won at end

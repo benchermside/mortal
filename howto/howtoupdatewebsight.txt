@@ -1,0 +1,16 @@
+make shoure you check into version control
+go to console.aws.amazon.com
+log in
+go to  s3
+scrool down, click  www.mcherm.com
+open apps
+open mortal
+uplode files dont forget to set public
+go to cloudfroont
+click on link with origen: www.mcherm.com
+go to invaladators tab
+click create invaladation
+replace path with an *
+invaladate
+wait
+you done

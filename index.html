@@ -599,8 +599,17 @@
                         document.getElementById("move" + i2).classList.add("hidden");
                         i2 = i2 + 1;
                     }
-                    broadcastMove("i'm dead");
+                    document.getElementById("gameOverMessage").classList.remove("hidden");
                 }
+                let j = 0;
+                while (j < 3){
+                    if (playersHealths[playerList[j]] < 1){
+                        console.log("made it to im dead function condition = true");
+                        playersNextMoves[playerList[j]] = "i'm dead";
+                    }
+                    j = j + 1;
+                }
+
             }
 
 

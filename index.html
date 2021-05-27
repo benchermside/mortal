@@ -318,6 +318,14 @@
                 const fullMessage = {"action":"sendMessage","data":message};
                 const messageText = JSON.stringify(fullMessage);
                 globalWebSocket.send(messageText);
+                let i = 0;
+                while (i < 3){
+                    if(playerList[i] === myName){
+                        document.getElementById("nextMove" + (i + 1) + "Display").innerText = move;
+                    }
+                    i = i + 1;
+                }
+
                 setMove(move, myName);
             }
 
@@ -547,7 +555,6 @@
                     }
                     if (playersNextMoves[playerList[movingPlayer]] === 'specialblock'){
                         specialBlocked (playerList[movingPlayer]);
-
                     }
                     if (playersNextMoves[playerList[movingPlayer]] === 'normalAttack1'){
                         normalAttack1(playerList[movingPlayer]);
@@ -632,7 +639,6 @@
                     }
                     document.getElementById("stunedMessage").classList.remove("hidden");
                 }
-
             }
 
 

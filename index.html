@@ -185,7 +185,7 @@
             const webSocketEndpoint = "wss://vo41xadzr9.execute-api.us-east-1.amazonaws.com/production";
             let playersLeft = 3;
             const playerToBeStunned = {};
-
+            const normalAttackButtens = [];
             // ==== Functions that dispatch incoming messages ====
 
             function onMessage(message) {
@@ -291,21 +291,27 @@
                 playerToBeStunned[playerList[2]] = false;
                 if(playerList[0] !== myName){
                     firstMove.innerText = playerList[0];
+                    normalAttackButtens.push(playerList[0]);
                 }
                 else {
                     firstMove.classList.add("hidden");
+                    normalAttackButtens.push(null);
                 }
                 if(playerList[1] !== myName) {
                     SecondMove.innerText = playerList[1];
+                    normalAttackButtens.push(playerList[1]);
                 }
                 else {
                     SecondMove.classList.add("hidden");
+                    normalAttackButtens.push(null);
                 }
                 if(playerList[2] !== myName){
                     ThirdMove.innerText = playerList[2];
+                    normalAttackButtens.push(playerList[2]);
                 }
                 else {
                     ThirdMove.classList.add("hidden");
+                    normalAttackButtens.push(null);
                 }
 
 
@@ -321,7 +327,18 @@
                 let i = 0;
                 while (i < 3){
                     if(playerList[i] === myName){
-                        document.getElementById("nextMove" + (i + 1) + "Display").innerText = move;
+                        if ((move !== "normalAttack1") && (move !== "normalAttack2") && (move !== "normalAttack3")){
+                            document.getElementById("nextMove" + (i + 1) + "Display").innerText = move;
+                        }
+                        else {
+                            let j = 0;
+                            while (j < 3){
+                                if (move === "normalAttack" + (j + 1)){
+                                    document.getElementById("nextMove" +(i+1) + "Display").innerText = "normal Attack " + playerList[j];
+                                }
+                                j = j + 1;
+                            }
+                        }
                     }
                     i = i + 1;
                 }
@@ -630,7 +647,7 @@
                     didPlayerINormalAttack = false;
                     j = 0
                     while (j < 3){
-                        if (playersPreviousMoves[playerList[i]] === "normalAttack" + j){
+                        if (playersPreviousMoves[playerList[i]] === "normalAttack" + (j + 1)){
                             console.log("should be here");
                             didPlayerINormalAttack = true;
                             console.log("normalAttack" + (playerList[j]));
@@ -641,7 +658,7 @@
                     }
                     if(didPlayerINormalAttack === false){
                         console.log("shouldent be here");
-                        document.getElementById("perviusMove" + (i+1) + "Display").innerText = player1PreviusMove[playerList[i]];
+                        document.getElementById("perviusMove" + (i+1) + "Display").innerText = playersPreviousMoves[playerList[i]];
                     }
                     i = i + 1;
                 }

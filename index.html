@@ -40,7 +40,9 @@
                 padding: 3px;
                 border: 1px solid black;
             }
-
+            .huge{
+                font-size: 40px;
+            }
 
 
         </style>
@@ -141,6 +143,12 @@
                         <button class="myBtn" onclick="broadcastMove('heal')">healing</button>
                     </div>
                 </div>
+                <div class="hidden" class="huge" id="gameOverMessage">
+                    you have been eliminated
+                </div>
+                <div class="hidden" class="huge" id="stunedMessage">
+                    you are stuned this round
+                </div>
                 <div class="grid">
                     <div class="element">names </div>
                     <div class="element" id="player1Header"></div>
@@ -175,6 +183,8 @@
             let myName = undefined;
             const ButtonsPointTo = [];
             const webSocketEndpoint = "wss://vo41xadzr9.execute-api.us-east-1.amazonaws.com/production";
+            let playersLeft = 3;
+            const playerToBeStunned = {};
 
             // ==== Functions that dispatch incoming messages ====
 
@@ -214,6 +224,13 @@
             function gamePlayMessage(messageText){
                 const message = JSON.parse(messageText);
                 if (message.trigger === "messageSent") {
+                    let i = 0;
+                    while (i < 3){
+                        if (playerList[i] === message.sender){
+                            document.getElementById("nextMove" + (i + 1) + "Display").innerText = "selected";
+                        }
+                        i = i + 1;
+                    }
                     setMove(message.data.move,message.sender);
                 }
 
@@ -269,6 +286,9 @@
                 const firstMove = document.getElementById("normalAttackFirst");
                 const SecondMove = document.getElementById("normalAttackSecond");
                 const ThirdMove = document.getElementById("normalAttackThird");
+                playerToBeStunned[playerList[0]] = false;
+                playerToBeStunned[playerList[1]] = false;
+                playerToBeStunned[playerList[2]] = false;
                 if(playerList[0] !== myName){
                     firstMove.innerText = playerList[0];
                 }
@@ -293,6 +313,7 @@
 
             function broadcastMove(move){
                 ///needs to be updated to deal with deth
+
                 const message = {"move":move};
                 const fullMessage = {"action":"sendMessage","data":message};
                 const messageText = JSON.stringify(fullMessage);
@@ -317,11 +338,12 @@
 
                 function specialAttack (actingPlayer){
                     console.log("special Attacked");
-                    let whosAttacked = 0;
-                    while (whosAttacked < 3){
+                    let whosAttacked = undefined;
+                    let i = 0;
+                    while (i < 3){
+                        whosAttacked = playerList[i];
                         if (!( whosAttacked === actingPlayer)){
                             if (playersNextMoves[whosAttacked] === "specialblock"){
-                                console.log("blokedbyspecialblock");
                             }
                             else{
                                 if (playersNextMoves[whosAttacked] === "block"){
@@ -330,21 +352,18 @@
                                 else{
                                     if (playersNextMoves[whosAttacked] === "reflect"){
                                         console.log("noted reflection");
-                                        let thirdplayer = 0;
-                                        while(thirdplayer < 3) {
-                                            if (!((thirdplayer === whosAttacked) || (thirdplayer === actingPlayer ))){
-                                                console.log("about to log signifignet thing");
-                                                console.log(thirdplayer.toString(10));
-                                                console.log(possibleMoves[0] + thirdplayer.toString(10));
-                                                if(((playersNextMoves[thirdplayer] === "specialAttack") || (playersNextMoves[thirdplayer] === 'tobestuned' ))||(playersNextMoves[thirdplayer] === (possibleMoves[0] + ((whosAttacked + 1).toString(10))))){
-                                                    //must change flase with a check of is playersMoves[thirdplayer] == normal attack twards player whoes attacked
+                                        let thirdPlayer = 0;
+                                        while(thirdPlayer < 3) {
+                                            if (!((thirdPlayer === whosAttacked) || (thirdPlayer === actingPlayer ))){
+                                                if(((playersNextMoves[thirdPlayer] === "specialAttack") || (playerToBeStunned[thirdPlayer] === true))||(playersNextMoves[thirdPlayer] === ('normalAttack' + ((i + 1).toString(10))))){
+                                                    //fixme remove playerToBeStuned part of condition
                                                     playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
                                                 }
                                                 else{
                                                     playersHealths[whosAttacked] = playersHealths[whosAttacked] - 6;
                                                 }
                                             }
-                                            thirdplayer = thirdplayer + 1;
+                                            thirdPlayer = thirdPlayer + 1;
                                         }
                                     }
                                     else{
@@ -353,15 +372,12 @@
                                 }
                             }
                         }
-                        whosAttacked = whosAttacked + 1;
+                        i = i + 1;
                     }
-                    playersNextMoves[actingPlayer] = 'tobestuned';
+                    playerToBeStunned[actingPlayer] = true;
+                    console.log("this is the player to be stuned varable after soposidly stunning the guy ",playerToBeStunned);
                 }
 
-                function stuned (actingPlayer){
-                    console.log("entered sutn finction");
-                    playersNextMoves[actingPlayer] = null;
-                }
 
                 function block(actingPlayer){
                     console.log("blocked");
@@ -410,7 +426,7 @@
                                 while (count < 3){
                                     thirdPlayer = playerList[count];
                                     if (!((thirdPlayer === actingPlayer)|| (thirdPlayer === opposingPlayer) )){
-                                        if (((playersNextMoves[thirdPlayer] === "specialAttack") ||(playersNextMoves[thirdPlayer] === "normalAttack1"))||(playersNextMoves[thirdPlayer] === "tobestuned")){
+                                        if (((playersNextMoves[thirdPlayer] === "specialAttack") ||(playersNextMoves[thirdPlayer] === "normalAttack1"))||(playerToBeStunned[thirdPlayer] === true)){
                                             //update for whatever stun method you are uesing on specel attack
                                             playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
                                         }
@@ -445,7 +461,7 @@
                                 while (count < 3){
                                     thirdplayer = playerList[count]
                                     if (!((thirdplayer === actingPlayer)|| (thirdplayer === opposingPlayer) )){
-                                        if (((playersNextMoves[thirdplayer] === "specialAttack") ||(playersNextMoves[thirdplayer] === "normalAttack2"))||(playersNextMoves[thirdplayer] === "tobestuned")){
+                                        if (((playersNextMoves[thirdplayer] === "specialAttack") ||(playersNextMoves[thirdplayer] === "normalAttack2"))||(playerToBeStunned[thirdplayer] === true)){
                                             playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
                                         }
                                         else{
@@ -476,7 +492,7 @@
                                 let count = 0
                                 while (count < 3){
                                     if (!((thirdPlayer === actingPlayer)|| (thirdPlayer === opposingplayer) )){
-                                        if (((playersNextMoves[thirdPlayer] === "specialAttack") ||(playersNextMoves[thirdPlayer] === "normalAttack3"))||(playersNextMoves[thirdPlayer] === "tobestuned")){
+                                        if (((playersNextMoves[thirdPlayer] === "specialAttack") ||(playersNextMoves[thirdPlayer] === "normalAttack3"))||(playerToBeStunned[thirdPlayer] === true)){
                                             playersHealths[actingPlayer] = playersHealths[actingPlayer] - 2;
                                         }
                                         else{
@@ -493,58 +509,122 @@
                     }
                 }
 
-
-
-
-
-                let count = 0;
-                while (count < 3){
-                    if (playersNextMoves[playerList[count]] === 'stuned'){
-                        stuned(playerList[count]);
-                    }
-                    if (playersNextMoves[playerList[count]] === 'specialAttack'){
-                        specialAttack (playerList[count]);
-
-                    }
-                    if (playersNextMoves[playerList[count]] === 'heal'){
-                        Heal (playerList[count]);
-
-                    }
-                    if (playersNextMoves[playerList[count]] === 'reflect'){
-                        Reflect (playerList[count]);
-
-                    }
-                    if (playersNextMoves[playerList[count]] === 'block'){
-                        block (playerList[count]);
-
-                    }
-                    if (playersNextMoves[playerList[count]] === 'specialblock'){
-                        specialBlocked (playerList[count]);
-
-                    }
-                    if (playersNextMoves[playerList[count]] === 'normalAttack1'){
-                        normalAttack1(playerList[count]);
-                    }
-                    if (playersNextMoves[playerList[count]] === 'normalAttack2'){
-                        normalAttack2(playerList[count]);
-                    }
-                    if (playersNextMoves[playerList[count]] === 'normalAttack3'){
-                        normalAttack3(playerList[count])
-                    }
-                    count = count + 1;
+                function stunned (actingPlayer){
+                    console.log("calling stunned function");
 
                 }
-                console.log(playersHealths);
+
+
+
+                let movingPlayer = 0;
+                while (movingPlayer < 3){
+                    // const functionMap = {
+                    //   "stuned": stunned,
+                    //   "specialAttack": specialAttack,
+                    //   "heal": Heal,
+                    // };
+                    // const functionToCall = functionMap[playersNextMoves[playerList[movingPlayer]]];
+                    // functionToCall(playerList[movingPlayer]);
+
+                    if (playersNextMoves[playerList[movingPlayer]] === 'stuned'){
+                        stunned(playerList[movingPlayer]);
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'specialAttack'){
+                        specialAttack (playerList[movingPlayer]);
+
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'heal'){
+                        Heal (playerList[movingPlayer]);
+
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'reflect'){
+                        Reflect (playerList[movingPlayer]);
+
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'block'){
+                        block (playerList[movingPlayer]);
+
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'specialblock'){
+                        specialBlocked (playerList[movingPlayer]);
+
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'normalAttack1'){
+                        normalAttack1(playerList[movingPlayer]);
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'normalAttack2'){
+                        normalAttack2(playerList[movingPlayer]);
+                    }
+                    if (playersNextMoves[playerList[movingPlayer]] === 'normalAttack3'){
+                        normalAttack3(playerList[movingPlayer])
+                    }
+                    movingPlayer = movingPlayer + 1;
+
+                }
+                console.log("the player healths are ",playersHealths);
                 let i = 0;
                 while (i < 3){
                     playersPreviousMoves[playerList[i]] = playersNextMoves[playerList[i]];
                     playersNextMoves[playerList[i]] = null;
                     i = i + 1;
                 }
+                let ii = 0;
+                let unStunTarget = undefined;
+                while (ii < 3) {
+                    unStunTarget = playerList[ii];
+                    console.log(unStunTarget,playerToBeStunned,myName);
+                    if (playerToBeStunned[unStunTarget] === true) {
+                        playerToBeStunned[unStunTarget] = false;
+                        console.log("about to check condition", myName," ",unStunTarget);
+                        if (myName === unStunTarget) {
+                            console.log("should brodcast ","stunned");
+                            broadcastMove("stunned");
+                        }
+                    }
+                    ii = ii + 1;
+                }
+                updateDisplay();
+                if (playersHealths[myName] < 1){
+                    console.log("Im dead");
+                    let i2 = 1;
+                    while (i2 < 7){
+                        console.log("im dead");
+                        document.getElementById("move" + i2).classList.add("hidden");
+                        i2 = i2 + 1;
+                    }
+                    broadcastMove("i'm dead");
+                }
             }
 
 
-
+            function updateDisplay(){
+                const player1Health = document.getElementById("health1display");
+                const player2Health = document.getElementById("health2display");
+                const player3Health = document.getElementById("health3display");
+                const player1CurrentMove = document.getElementById("nextMove1Display");
+                const player2CurrentMove = document.getElementById("nextMove2Display");
+                const player3CurrentMove = document.getElementById("nextMove3Display");
+                const player1PreviusMove = document.getElementById("perviusMove1Display");
+                const player2PreviusMove = document.getElementById("perviusMove2Display");
+                const player3PreviusMove = document.getElementById("perviusMove3Display");
+                player1Health.innerText = playersHealths[playerList[0]];
+                player2Health.innerText = playersHealths[playerList[1]];
+                player3Health.innerText = playersHealths[playerList[2]];
+                player1PreviusMove.innerText = playersPreviousMoves[playerList[0]];
+                player2PreviusMove.innerText = playersPreviousMoves[playerList[1]];
+                player3PreviusMove.innerText = playersPreviousMoves[playerList[2]];
+                player1CurrentMove.innerText = "";
+                player2CurrentMove.innerText = "";
+                player3CurrentMove.innerText = "";
+                if(playersNextMoves[myName] === "stunned"){
+                    let count = 1;
+                    while (count < 7){
+                        document.getElementById("move" + count).classList.add("hidden");
+                        count = count + 1;
+                    }
+                    document.getElementById("stunedMessage").classList.remove("hidden");
+                }
+            }
 
 
             function slectTarget(){

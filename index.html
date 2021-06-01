@@ -65,6 +65,12 @@
             #gamebord.hidden {
                 display: none;
             }
+            .gameplayDescription{
+                border: 1px solid black;
+                width: 160px;
+                padding: 3px;
+            }
+
 
         </style>
     </head>
@@ -161,7 +167,7 @@
                                         <div>
                                             <button class="myBtn" onclick="broadcastMove('normalAttack3')" id="normalAttackThird"></button>
                                         </div>
-                                        <div id="normalAttackRules">deal 2 damage to target player</div>
+                                        <div id="normalAttackRules" class="gameplayDescription">deal 2 damage to target player</div>
                                     </div>
                                 </div>
                             </div>
@@ -171,35 +177,35 @@
                             <div>
                                 <button class="myBtn" onclick="broadcastMove('specialAttack')">specialAttack</button>
                             </div>
-                            <div>deal 6 damage to ALL other players, skip your next turn</div>
+                            <div id="specialAttackRules" class="gameplayDescription">Deal 6 damage to ALL other players, skip your next turn</div>
                         </div>
                         <div class="hidden" id = "move3">
                             <img class="picture" src="game images/block.jpg"/>
                             <div>
                                 <button class="myBtn" onclick="broadcastMove('block')">block</button>
                             </div>
-                            <div>all attacks on you reduced to 1 damage</div>
+                            <div id="blockRules" class="gameplayDescription">All attacks on you reduced to 1 damage</div>
                         </div>
                         <div class="hidden" id="move4">
                             <img class="picture" src="game images/specialblock.jpg"/>
                             <div>
                                 <button class="myBtn" onclick="broadcastMove('specialblock')">specialblock</button>
                             </div>
-                            <div>all attacks on you reduced to 0 damage (1 use per game)</div>
+                            <div id="specialBlockRules" class="gameplayDescription">All attacks on you reduced to 0 damage (1 use per game)</div>
                         </div>
                         <div class="hidden" id = "move5">
                             <img class="picture" src="game images/reflect.jpg"/>
                             <div>
                                 <button class="myBtn" onclick="broadcastMove('reflect')">reflect</button>
                             </div>
-                            <div>if you get attacked by all other players, take no damage and each other player takes 2 damage</div>
+                            <div id="reflectRules" class="gameplayDescription">If you get attacked by all other players, take no damage and each other player takes 2 damage</div>
                         </div>
                         <div class="hidden" id = "move6">
                             <img class="picture" src="game images/healing.jpg"/>
                             <div>
                                 <button class="myBtn" onclick="broadcastMove('heal')">healing</button>
                             </div>
-                            <div>heal you 2 HP and heal all other non-blocking players 1 hp</div>
+                            <div id="healRules" class="gameplayDescription">Heal yourself 2 HP and heal all other non-blocking players 1 hp</div>
                         </div>
                         <div class="hidden" class="huge" id="gameOverMessage">
                             you have been eliminated

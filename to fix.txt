@@ -2,4 +2,5 @@ needs start new game butten
 needs rules
 why is mom at 3 not -3 bug
 should say dead not -2
-should say who won at end
+but with player and everybody else having inconsistent healths
+normal attack butten does nothing, remove or change?

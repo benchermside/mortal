@@ -81,6 +81,7 @@
     <body>
         <div id="page" >
             <h1>Mortal</h1>
+            <p>Mortal is a 3 player online game. To start a game, enter any username along with any game ID. The other 2 players should all enter the same game ID to join the game along with any username they choose.</p>
             <div>
                 <div id="logInScreen">
                     <div id="enterUserName">
@@ -224,7 +225,7 @@
                     everybody died
                 </div>
                 <div id="startNewGame" class="hidden">
-                    <button class="myBtn" onclick="startNewGame()">start new game</button>
+                    <button class="myBtn" onclick="meRestarting()">start new game</button>
                 </div>
             </div>
             <div> <i>by Ben Chermside</i> </div>
@@ -859,6 +860,7 @@
                 document.getElementById("win message").classList.add("hidden");
                 document.getElementById("loose message").classList.add("hidden");
                 document.getElementById("gameOverMessage").classList.add("hidden");
+                document.getElementById("replayGrid").classList.add("hidden");
                 startGame();
                 updateDisplay();
                 console.log("started new game");
